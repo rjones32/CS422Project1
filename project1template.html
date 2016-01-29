@@ -11,6 +11,7 @@
 <body>
 		<!-- canvas tag for Fabric.js to draw into -->
 		<canvas id="c" width="4140" height="2200" style="border:2px solid black;" ></canvas>
+
 </body>
  
 <script>
@@ -25,10 +26,11 @@
   var waterLevel = 0;
   var isHot = false;
   var isCelsius = false;
-  var knobImb = [];
+  var tmpDisp = [];
   var profiles = [];
-  var tempDisplay = "../";
   var png = ".png";
+  var temperatureDisplay;
+
 
 
 (function() {
@@ -37,8 +39,11 @@
   var localWidth = 1860;
 
   var canvas = this.__canvas = new fabric.Canvas('c');
+
   canvas.backgroundColor = "#5555F5"; // background blue to help find it
   //fabric.Object.prototype.transparentCorners = false;
+
+  canvas.renderOnAddRemove=false;
 
 /*
   canvas.on('mouse:over', function(e) {
@@ -113,10 +118,12 @@ var showerHead = new fabric.Circle({
 
 
 
-var tempText = new fabric.Text('default', { left: 1500, top: 90, fontFamily: 'Arial', fontSize: 40, fontWeight: 'italic', originX: 'center',
-  originY: 'center',});
+
+var tempText = new fabric.Text('default', { left: 1550, top: 565, fontFamily: 'Arial', fontSize: 40, fontWeight: 'italic', originX: 'top',
+  originY: 'top',});
+
 tempText.hasControls = tempText.hasBorders = false;
-tempText.lockMovementX = tempText.lockMovementY = true;
+tempText.lockMovementX = tempText.lockMovementY = false;
 tempText.selectable = false
 tempText.evented = false
 
@@ -129,6 +136,168 @@ var waterControl = new fabric.Circle({
   radius: 50
 });
 
+//-------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------My code---------------------------------------------------------
+    var hotArrow = new fabric.Rect({
+        left: 1600,
+        top: 565,
+        originX: 'center',
+        originY: 'center',
+        fill:'grey',
+        height: 150,
+        width: 100
+    })
+    var coldArrow = new fabric.Rect({
+        left: 1725,
+        top: 565,
+        originX: 'center',
+        originY: 'center',
+        fill:'grey',
+        height: 150,
+        width: 100
+    })
+    hotArrow.lockMovementX = hotArrow.lockMovementY = true;
+    function tempInc(){
+        if(temperature==0){
+            temperature=70;
+        }
+        else if(temperature==65){
+            temperature=0;
+        }
+        else if (temperature>=95){
+            temperature=95;
+        }
+        else{
+            temperature = temperature + 5;
+        }
+        console.log("Increasing temperature");
+        temperatureDisplay = new fabric.Image.fromURL(temperature+png, function(img) {
+            img.scale(.5).set({
+                left: 3700,
+                top: 1250,
+                lockMovementX:true,
+                lockMovementY:true,
+                lockRotation:true,
+                lockScalingX:true,
+                lockScalingY:true,
+                originX: 'center',
+                originY: 'center',
+                visible: true
+            });
+            canvas.add(img).setActiveObject(img);
+        });
+
+    }
+
+
+    function tempDec(){
+        if(temperature==0){
+            temperature=65;
+        }
+        else if(temperature==70){
+            temperature = 0;
+        }
+        else if(temperature<=40){
+            temperature = 40;
+        }
+        else{
+            temperature = temperature - 5;
+        }
+        console.log("Deceasing Temperature");
+
+        temperatureDisplay = new fabric.Image.fromURL(temperature+png, function(img) {
+            img.scale(.5).set({
+                left: 3700,
+                top: 1250,
+                lockMovementX:true,
+                lockMovementY:true,
+                lockRotation:true,
+                lockScalingX:true,
+                lockScalingY:true,
+                originX: 'center',
+                originY: 'center',
+                visible: true
+            });
+            canvas.add(img).setActiveObject(img);
+        });
+
+
+    }
+    hotArrow.on('selected', function() {
+        console.log('selected hotArrow');
+        tempInc();
+        canvas.deactivateAll(); // deselect everything
+    });
+
+    coldArrow.on('selected', function() {
+        console.log('selected hotArrow');
+        tempDec();
+        canvas.deactivateAll(); // deselect everything
+    });
+
+    /*
+     arrow2.on('selected', function() {
+     //console.log('selected a rectangle');
+     tempDec();
+     canvas.deactivateAll(); // deselect everything
+     });*/
+//-----------------------------------------------------------------------------------------------------------------
+//----------------------------------My Code------------------------------------------------------------------------
+
+   var temperatureDisplay = new fabric.Image.fromURL('0'+png, function(img) {
+        img.scale(.5).set({
+            left: 3700,
+            top: 1250,
+            lockMovementX:true,
+            lockMovementY:true,
+            lockRotation:true,
+            lockScalingX:true,
+            lockScalingY:true,
+            originX: 'center',
+            originY: 'center',
+            visible: true
+        });
+        canvas.add(img).setActiveObject(img);
+    });
+
+
+   var arrow1 = new fabric.Image.fromURL('hot-arrow.png', function(img2) {
+        img2.scale(.5).set({
+            left: 3550,
+            top: 1250,
+            lockMovementX:true,
+            lockMovementY:true,
+            lockRotation:true,
+            lockScalingX:true,
+            lockScalingY:true,
+            originX: 'center',
+            originY: 'center',
+            visible: true
+        });
+
+       //img2.on('moving', function() { tempInc() });
+        canvas.add(img2);
+    });
+
+    var arrow2 = new fabric.Image.fromURL('cold-arrow.png', function(img3) {
+        img3.scale(.5).set({
+            left: 3825,
+            top: 1250,
+            lockMovementX:true,
+            lockMovementY:true,
+            lockRotation:true,
+            lockScalingX:true,
+            lockScalingY:true,
+            originX: 'center',
+            originY: 'center',
+            visible: true
+        });
+       //img3.on('moving', function() { tempDec() });
+        canvas.add(img3);
+    });
+
+//----------------------------------End of My Code-----------------------------------------------------------------
+//----------------------------------------------------------------
 var waterTemp = 0;
 
 function updateWaterTemp() {
@@ -159,7 +328,9 @@ canvas.add(frontWall);
 canvas.add(showerHead);
 canvas.add(bathSpout);
 canvas.add(waterControl);
-canvas.add(tempText);
+canvas.add(hotArrow);
+canvas.add(coldArrow);
+    canvas.add(tempText);
 
 // code adapted from http://jsfiddle.net/tornado1979/39up3jcm/
 function zoomAll(SCALE_FACTOR) {
@@ -190,6 +361,9 @@ function zoomAll(SCALE_FACTOR) {
 
 
 zoomAll(canvas.height / localHeight);
+
+
+
 
 })();
 

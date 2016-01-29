@@ -15,11 +15,21 @@
  
 <script>
 
-
 // within the code below I assume I am drawing into a 1860x990 box
 // then I can scale the group to whatever size the final canvas is
 // in this case 4140 x 2200 for the wall
 // you should pick an appropriate local size and canvas size that are easy for you to work with
+
+  var temperature = 0;
+  var pressure = 0;
+  var waterLevel = 0;
+  var isHot = false;
+  var isCelsius = false;
+  var knobImb = [];
+  var profiles = [];
+  var tempDisplay = "../";
+  var png = ".png";
+
 
 (function() {
 

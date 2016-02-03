@@ -22,6 +22,7 @@
 // you should pick an appropriate local size and canvas size that are easy for you to work with
 
   var temperature = 0;
+  var diverter = false;
   var pressure = 0;
   var waterLevel = 0;
   var isHot = false;
@@ -29,7 +30,17 @@
   var tmpDisp = [];
   var profiles = [];
   var png = ".png";
-  var temperatureDisplay;
+  var tempType = "F";
+  var tempDisp;
+  var divButt;
+  var divButt2;
+  var hotArrow;
+  var coldArrow;
+  var pressDisp;
+  var incPressButton;
+  var decPressButton;
+
+
 
 
 
@@ -119,13 +130,35 @@ var showerHead = new fabric.Circle({
 
 
 
-var tempText = new fabric.Text('default', { left: 1550, top: 565, fontFamily: 'Arial', fontSize: 40, fontWeight: 'italic', originX: 'top',
+var tempText = new fabric.Text('0F', { left: 1755, top: 545, fontFamily: 'Arial', fontSize: 40, fontWeight: 'italic', originX: 'top',
   originY: 'top',});
 
 tempText.hasControls = tempText.hasBorders = false;
 tempText.lockMovementX = tempText.lockMovementY = false;
-tempText.selectable = false
-tempText.evented = false
+tempText.selectable = false;
+
+//tempText.evented = false
+var degree = new fabric.Text('o', { left: 1770, top: 530, fontFamily: 'Arial', fontSize: 20, fontWeight: 'italic', originX: 'top', originY: 'top',});
+
+    tempText.hasControls = tempText.hasBorders = false;
+    tempText.lockMovementX = tempText.lockMovementY = false;
+    tempText.selectable = false;
+
+    var pressText = new fabric.Text('0', { left: 1465, top: 545, fontFamily: 'Arial', fontSize: 40, fontWeight: 'italic', originX: 'top',
+        originY: 'top',});
+
+    pressText.hasControls = pressText.hasBorders = false;
+    pressText.lockMovementX = pressText.lockMovementY = false;
+    pressText.selectable = false;
+
+//tempText.evented = false
+
+    var psi = new fabric.Text('psi', { left: 1470, top: 530, fontFamily: 'Arial', fontSize: 20, fontWeight: 'italic', originX: 'top',
+        originY: 'top',});
+
+    psi.hasControls = psi.hasBorders = false;
+    psi.lockMovementX = psi.lockMovementY = false;
+    psi.selectable = false;
 
 var waterControl = new fabric.Circle({
   left: 1500,
@@ -138,12 +171,12 @@ var waterControl = new fabric.Circle({
 
 //-------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------My code---------------------------------------------------------
-    var hotArrow = new fabric.Rect({
+  /*  var hotArrow = new fabric.Rect({
         left: 1600,
         top: 565,
         originX: 'center',
         originY: 'center',
-        fill:'grey',
+        fill:'white',
         height: 150,
         width: 100
     })
@@ -152,12 +185,17 @@ var waterControl = new fabric.Circle({
         top: 565,
         originX: 'center',
         originY: 'center',
-        fill:'grey',
+        fill:'white',
         height: 150,
         width: 100
     })
     hotArrow.lockMovementX = hotArrow.lockMovementY = true;
+    coldArrow.lockMovementX=coldArrow.lockMovementY = true;*/
+
     function tempInc(){
+
+        var temp;
+
         if(temperature==0){
             temperature=70;
         }
@@ -171,9 +209,11 @@ var waterControl = new fabric.Circle({
             temperature = temperature + 5;
         }
         console.log("Increasing temperature");
-        temperatureDisplay = new fabric.Image.fromURL(temperature+png, function(img) {
-            img.scale(.5).set({
-                left: 3700,
+
+
+        fabric.Image.fromURL(temperature+png, function(img) {
+            temp=img.scale(.5).set({
+                left: 3900,
                 top: 1250,
                 lockMovementX:true,
                 lockMovementY:true,
@@ -184,13 +224,20 @@ var waterControl = new fabric.Circle({
                 originY: 'center',
                 visible: true
             });
+            canvas.remove(tempDisp);
+            tempDisp = temp;
             canvas.add(img).setActiveObject(img);
+            tempText.bringToFront();
+            degree.bringToFront();
         });
+        tempText.text=temperature.toString()+tempType;
 
     }
 
 
     function tempDec(){
+        var temp;
+
         if(temperature==0){
             temperature=65;
         }
@@ -205,9 +252,9 @@ var waterControl = new fabric.Circle({
         }
         console.log("Deceasing Temperature");
 
-        temperatureDisplay = new fabric.Image.fromURL(temperature+png, function(img) {
-            img.scale(.5).set({
-                left: 3700,
+        fabric.Image.fromURL(temperature+png, function(img) {
+            temp=img.scale(.5).set({
+                left: 3900,
                 top: 1250,
                 lockMovementX:true,
                 lockMovementY:true,
@@ -218,12 +265,163 @@ var waterControl = new fabric.Circle({
                 originY: 'center',
                 visible: true
             });
+            canvas.remove(tempDisp);
+            tempDisp = temp;
+
             canvas.add(img).setActiveObject(img);
+            tempText.bringToFront();
+            tempText.bringToFront();
+            degree.bringToFront();
+            tempText.text=temperature.toString()+tempType;
+
+
         });
 
 
     }
-    hotArrow.on('selected', function() {
+
+    function divButton(){
+        var temp;
+
+        if(diverter==false){
+            console.log("diverter is false");
+            fabric.Image.fromURL('diverter3'+png, function(img5) {
+                temp=img5.scale(.4).set({
+                    left: 3650,
+                    top: 1500,
+                    hasControls:false,
+                    hasRotatingPoint:false,
+                    lockMovementX:true,
+                    lockMovementY:true,
+                    /*lockRotation:true,
+                     lockScalingX:true,
+                     lockScalingY:true,*/
+                    originX: 'center',
+                    originY: 'center',
+                    visible: true
+                });
+                canvas.add(img5);
+                canvas.remove(divButt2);
+
+                img5.on('selected',function(){
+                    divButton();
+
+                })
+
+                img5.bringToFront();
+                divButt2 = temp;
+                diverter = true;
+
+            });
+
+        }
+        else if(diverter==true){
+
+            console.log("diverter is true");
+            fabric.Image.fromURL('diverter2'+png, function(img5) {
+                temp=img5.scale(.4).set({
+                    left: 3650,
+                    top: 1500,
+                    hasControls:false,
+                    hasRotatingPoint:false,
+                    lockMovementX:true,
+                    lockMovementY:true,
+                    /*lockRotation:true,
+                     lockScalingX:true,
+                     lockScalingY:true,*/
+
+                    originX: 'center',
+                    originY: 'center',
+                    visible: true
+                });
+                canvas.add(img5);
+                canvas.remove(divButt2);
+                img5.on('selected',function(){
+                    divButton();
+
+                })
+                img5.bringToFront();
+                divButt2 = temp;
+                diverter = false;
+
+            });
+        }
+    }
+
+    function incPress(){
+
+        var temp;
+
+        if(pressure<25){
+            pressure=pressure+5;
+        }
+        else{
+            pressure = 25;
+        }
+        console.log("Increasing pressure");
+
+
+        fabric.Image.fromURL('p'+pressure+png, function(img6) {
+            temp=img6.scale(.5).set({
+                left: 3400,
+                top: 1250,
+                lockMovementX:true,
+                lockMovementY:true,
+                lockRotation:true,
+                lockScalingX:true,
+                lockScalingY:true,
+                originX: 'center',
+                originY: 'center',
+                visible: true
+            });
+            canvas.remove(pressDisp);
+            pressDisp = temp;
+            canvas.add(img6).setActiveObject(img6);
+
+        });
+
+
+    }
+
+
+    function decPress(){
+        var temp;
+
+        if(pressure==25){
+            pressure=pressure-5;
+        }
+        else {
+            pressure = 0;
+        }
+
+        console.log("Deceasing pressure");
+
+        fabric.Image.fromURL('p'+pressure+png, function(img6) {
+            temp=img6.scale(.5).set({
+                left: 3400,
+                top: 1250,
+                lockMovementX:true,
+                lockMovementY:true,
+                lockRotation:true,
+                lockScalingX:true,
+                lockScalingY:true,
+                originX: 'center',
+                originY: 'center',
+                visible: true
+            });
+            canvas.remove(pressDisp);
+            pressDisp = temp;
+
+            canvas.add(img6).setActiveObject(img6);
+
+
+
+        });
+
+
+    }
+
+   /* hotArrow.on('selected', function() {
         console.log('selected hotArrow');
         tempInc();
         canvas.deactivateAll(); // deselect everything
@@ -233,7 +431,12 @@ var waterControl = new fabric.Circle({
         console.log('selected hotArrow');
         tempDec();
         canvas.deactivateAll(); // deselect everything
-    });
+    });*/
+
+
+
+
+
 
     /*
      arrow2.on('selected', function() {
@@ -244,9 +447,37 @@ var waterControl = new fabric.Circle({
 //-----------------------------------------------------------------------------------------------------------------
 //----------------------------------My Code------------------------------------------------------------------------
 
-   var temperatureDisplay = new fabric.Image.fromURL('0'+png, function(img) {
-        img.scale(.5).set({
-            left: 3700,
+
+
+    fabric.Image.fromURL('0'+png, function(img) {
+        tempDisp=img.scale(.5).set({
+            left: 3900,
+            top: 1250,
+            hasControls:false,
+            hasRotatingPoint:false,
+            lockMovementX:false,
+            lockMovementY:false,
+            /*lockRotation:true,
+            lockScalingX:true,
+            lockScalingY:true,*/
+            originX: 'center',
+            originY: 'center',
+            visible: true
+        });
+         canvas.add(img);
+        tempText.bringToFront();
+        degree.bringToFront();
+    });
+
+
+
+
+
+
+   fabric.Image.fromURL('hot-arrow.png', function(img2) {
+        img2.scale(.5).set({
+            _uid:1,
+            left: 3750,
             top: 1250,
             lockMovementX:true,
             lockMovementY:true,
@@ -257,12 +488,130 @@ var waterControl = new fabric.Circle({
             originY: 'center',
             visible: true
         });
-        canvas.add(img).setActiveObject(img);
+
+       img2.on('selected', function() {
+           tempInc();
+
+        });
+        canvas.add(img2).setActiveObject(img2);
+       tempText.bringToFront();
+
+    });
+
+    fabric.Image.fromURL('cold-arrow.png', function(img3) {
+        img3.scale(.5).set({
+            _uid:2,
+            left: 4050,
+            top: 1250,
+            lockMovementX:true,
+            lockMovementY:true,
+            lockRotation:true,
+            lockScalingX:true,
+            lockScalingY:true,
+            originX: 'center',
+            originY: 'center',
+            visible: true
+        });
+       img3.on('selected', function() {
+           tempDec()});
+
+        canvas.add(img3).setActiveObject(img3);
+    });
+
+    fabric.Image.fromURL('diverter1'+png, function(img4) {
+        divButt=img4.scale(.4).set({
+            left: 3650,
+            top: 1500,
+            hasControls:false,
+            hasRotatingPoint:false,
+            lockMovementX:true,
+            lockMovementY:true,
+            /*lockRotation:true,
+             lockScalingX:true,
+             lockScalingY:true,*/
+            originX: 'center',
+            originY: 'center',
+            visible: true
+        });
+        canvas.add(img4);
+    });
+
+    fabric.Image.fromURL('diverter2'+png, function(img5) {
+        divButt2=img5.scale(.4).set({
+            left: 3650,
+            top: 1500,
+            hasControls:false,
+            hasRotatingPoint:false,
+            lockMovementX:true,
+            lockMovementY:true,
+            /*lockRotation:true,
+             lockScalingX:true,
+             lockScalingY:true,*/
+            originX: 'center',
+            originY: 'center',
+            visible: true
+        });
+        canvas.add(img5);
+        img5.bringToFront();
+        img5.on('selected',function(){
+            divButton();
+
+        })
     });
 
 
-   var arrow1 = new fabric.Image.fromURL('hot-arrow.png', function(img2) {
-        img2.scale(.5).set({
+    fabric.Image.fromURL('p0'+png, function(img6) {
+        pressDisp=img6.scale(.5).set({
+            left: 3400,
+            top: 1250,
+            hasControls:false,
+            hasRotatingPoint:false,
+            lockMovementX:true,
+            lockMovementY:true,
+            /*lockRotation:true,
+             lockScalingX:true,
+             lockScalingY:true,*/
+            originX: 'center',
+            originY: 'center',
+            visible: true
+        });
+        canvas.add(img6).setActiveObject(img6);
+       pressText.bringToFront();
+        psi.bringToFront();
+    });
+
+
+
+
+
+
+    fabric.Image.fromURL('incPress.png', function(img7) {
+        incPressButton=img7.scale(.5).set({
+            _uid:1,
+            left: 3250,
+            top: 1250,
+            lockMovementX:true,
+            lockMovementY:true,
+            lockRotation:true,
+            lockScalingX:true,
+            lockScalingY:true,
+            originX: 'center',
+            originY: 'center',
+            visible: true
+        });
+
+       img7.on('selected', function() {
+           incPress();
+
+        });
+        canvas.add(img7).setActiveObject(img7);
+
+
+    });
+
+    fabric.Image.fromURL('decpress.png', function(img8) {
+        decPressButton=img8.scale(.5).set({
+            _uid:2,
             left: 3550,
             top: 1250,
             lockMovementX:true,
@@ -274,27 +623,16 @@ var waterControl = new fabric.Circle({
             originY: 'center',
             visible: true
         });
+       img8.on('selected', function() {
+           decPress();
+       });
 
-       //img2.on('moving', function() { tempInc() });
-        canvas.add(img2);
+        canvas.add(img8).setActiveObject(img8);
     });
 
-    var arrow2 = new fabric.Image.fromURL('cold-arrow.png', function(img3) {
-        img3.scale(.5).set({
-            left: 3825,
-            top: 1250,
-            lockMovementX:true,
-            lockMovementY:true,
-            lockRotation:true,
-            lockScalingX:true,
-            lockScalingY:true,
-            originX: 'center',
-            originY: 'center',
-            visible: true
-        });
-       //img3.on('moving', function() { tempDec() });
-        canvas.add(img3);
-    });
+
+
+
 
 //----------------------------------End of My Code-----------------------------------------------------------------
 //----------------------------------------------------------------
@@ -311,7 +649,7 @@ else {
 }
 }
 
-updateWaterTemp();
+
 
 waterControl.on('selected', function() {
   //console.log('selected a rectangle');
@@ -328,9 +666,14 @@ canvas.add(frontWall);
 canvas.add(showerHead);
 canvas.add(bathSpout);
 canvas.add(waterControl);
-canvas.add(hotArrow);
-canvas.add(coldArrow);
+
+
     canvas.add(tempText);
+    canvas.add(degree);
+
+
+
+
 
 // code adapted from http://jsfiddle.net/tornado1979/39up3jcm/
 function zoomAll(SCALE_FACTOR) {

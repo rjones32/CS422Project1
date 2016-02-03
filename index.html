@@ -137,23 +137,21 @@ tempText.hasControls = tempText.hasBorders = false;
 tempText.lockMovementX = tempText.lockMovementY = false;
 tempText.selectable = false;
 
-//tempText.evented = false
 var degree = new fabric.Text('o', { left: 1770, top: 530, fontFamily: 'Arial', fontSize: 20, fontWeight: 'italic', originX: 'top', originY: 'top',});
 
     tempText.hasControls = tempText.hasBorders = false;
     tempText.lockMovementX = tempText.lockMovementY = false;
     tempText.selectable = false;
 
-    var pressText = new fabric.Text('0', { left: 1465, top: 545, fontFamily: 'Arial', fontSize: 40, fontWeight: 'italic', originX: 'top',
+    var pressText = new fabric.Text('0', { left: 1525, top: 545, fontFamily: 'Arial', fontSize: 40, fontWeight: 'italic', originX: 'top',
         originY: 'top',});
 
     pressText.hasControls = pressText.hasBorders = false;
     pressText.lockMovementX = pressText.lockMovementY = false;
     pressText.selectable = false;
 
-//tempText.evented = false
 
-    var psi = new fabric.Text('psi', { left: 1470, top: 530, fontFamily: 'Arial', fontSize: 20, fontWeight: 'italic', originX: 'top',
+    var psi = new fabric.Text('psi', { left: 1555, top: 545, fontFamily: 'Arial', fontSize: 20, fontWeight: 'italic', originX: 'top',
         originY: 'top',});
 
     psi.hasControls = psi.hasBorders = false;
@@ -377,6 +375,9 @@ var waterControl = new fabric.Circle({
             canvas.remove(pressDisp);
             pressDisp = temp;
             canvas.add(img6).setActiveObject(img6);
+            pressText.text=pressure.toString();
+            pressText.bringToFront();
+            psi.bringToFront();
 
         });
 
@@ -387,7 +388,7 @@ var waterControl = new fabric.Circle({
     function decPress(){
         var temp;
 
-        if(pressure==25){
+        if(pressure>0){
             pressure=pressure-5;
         }
         else {
@@ -413,6 +414,9 @@ var waterControl = new fabric.Circle({
             pressDisp = temp;
 
             canvas.add(img6).setActiveObject(img6);
+            pressText.bringToFront();
+            psi.bringToFront();
+            pressText.text=pressure.toString();
 
 
 
@@ -420,6 +424,9 @@ var waterControl = new fabric.Circle({
 
 
     }
+
+
+
 
    /* hotArrow.on('selected', function() {
         console.log('selected hotArrow');
@@ -578,6 +585,7 @@ var waterControl = new fabric.Circle({
         canvas.add(img6).setActiveObject(img6);
        pressText.bringToFront();
         psi.bringToFront();
+
     });
 
 
@@ -666,10 +674,10 @@ canvas.add(frontWall);
 canvas.add(showerHead);
 canvas.add(bathSpout);
 canvas.add(waterControl);
-
-
-    canvas.add(tempText);
-    canvas.add(degree);
+canvas.add(psi);
+canvas.add(pressText);
+canvas.add(tempText);
+canvas.add(degree);
 
 
 

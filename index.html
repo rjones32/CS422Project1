@@ -39,7 +39,31 @@
   var pressDisp;
   var incPressButton;
   var decPressButton;
+  var gear;
+  var users;
+  var menuScreen;
+  var menuText1;
+  var menuText2;
+  var languages = [];
+  var lIndex = 0;
 
+  for(i=0;i<2;i++){
+      languages[i] = [];
+      for(j=0;j<5;j++){
+          languages[i][j]="a";
+      }
+  }
+
+  languages[0][0]="English";
+  languages[0][1]="Users";
+  languages[0][2]="Settings";
+  languages[0][3]="Languages";
+  languages[0][4]="Temperature Type";
+  languages[1][0]="français";
+  languages[1][1]="utilisateurs";
+  languages[1][2]="paramètres";
+  languages[1][3]="Langues";
+  languages[1][4]="Température Type";
 
 
 
@@ -128,6 +152,12 @@ var showerHead = new fabric.Circle({
 });
 
 
+    canvas.add(backWall);
+    canvas.add(sideWall);
+    canvas.add(frontWall);
+    canvas.add(showerHead);
+    canvas.add(bathSpout);
+
 
 
 var tempText = new fabric.Text('0F', { left: 1755, top: 545, fontFamily: 'Arial', fontSize: 40, fontWeight: 'italic', originX: 'top',
@@ -166,6 +196,8 @@ var waterControl = new fabric.Circle({
   fill: 'grey',
   radius: 50
 });
+
+
 
 //-------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------My code---------------------------------------------------------
@@ -639,7 +671,103 @@ var waterControl = new fabric.Circle({
     });
 
 
+    function menu1(index) {
+         menuScreen = new fabric.Rect({
+            left: 1635,
+            top: 325,
+            originX: 'center',
+            originY: 'center',
+            fill: 'black',
+            stroke: 'black',
+            width: 450,
+            height: 300,
+            angle: 0
+        });
 
+        menuScreen.lockMovementX = true;
+        menuScreen.lockMovementY = true;
+
+        fabric.Image.fromURL('gear.png', function (img9) {
+            gear = img9.scale(.5).set({
+                _uid: 1,
+                left: 3850,
+                top: 700,
+                lockMovementX: true,
+                lockMovementY: true,
+                lockRotation: true,
+                lockScalingX: true,
+                lockScalingY: true,
+                originX: 'center',
+                originY: 'center',
+                visible: true
+            });
+
+             img9.on('selected', function() {
+            settingMenu(lIndex);
+
+        });
+            canvas.add(img9).setActiveObject(img9);
+
+
+    });
+
+        fabric.Image.fromURL('user.png', function(img10) {
+        gear=
+                img10.scale(1).set({
+                    _uid:1,
+            left: 3375,
+            top: 700, lockMovementX:true,
+                    lockMovementY:true,
+                    lockRotation:true,
+                    lockScalingX:true,
+                    lockScalingY:true,
+            originX: 'center',
+            originY: 'center',
+            visible: true
+        });
+
+                    /* img7.on('selected', function() {
+         incPress();
+
+         });*/
+                    canvas.add(img10).setActiveObject(img10);
+
+
+    }
+        );
+
+
+        menuText1 = new fabric.Text(languages[index][2], { left: 1725, top: 400,fill:'white', fontFamily: 'Arial', fontSize: 40, fontWeight: 'italic', originX: 'top',
+            originY: 'top',});
+
+        tempText.hasControls = tempText.hasBorders = false;
+        tempText.lockMovementX = tempText.lockMovementY = false;
+        tempText.selectable = false;
+
+        menuText2 = new fabric.Text(languages[index][1], { left: 1525, top: 400, fontFamily: 'Arial',fill:'white', fontSize: 40, fontWeight: 'italic', originX: 'top',
+            originY: 'top',});
+
+        tempText.hasControls = tempText.hasBorders = false;
+        tempText.lockMovementX = tempText.lockMovementY = false;
+        tempText.selectable = false;
+
+        }
+
+    function settingMenu(index){
+
+
+
+
+        menuText1.setText(languages[index][3]);
+
+        menuText2.setText(languages[index][4]);
+
+
+
+
+    }
+
+    menu1(0);
 
 
 //----------------------------------End of My Code-----------------------------------------------------------------
@@ -668,16 +796,15 @@ waterControl.on('selected', function() {
 
 // as a quick test I could have a 'button' that changes colour when I press it
 
-canvas.add(backWall);
-canvas.add(sideWall);
-canvas.add(frontWall);
-canvas.add(showerHead);
-canvas.add(bathSpout);
-canvas.add(waterControl);
+
 canvas.add(psi);
 canvas.add(pressText);
 canvas.add(tempText);
 canvas.add(degree);
+    canvas.add(menuScreen);
+canvas.add(menuText1);
+canvas.add(menuText2);
+
 
 
 

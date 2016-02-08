@@ -90,6 +90,13 @@
   var menuText5;
   var menuText6;
   var menuText7;
+  var timeText1;
+  var timeText2;
+  var hour;
+  var min;
+  var day;
+  var year;
+  var date = new Date();
   var menuIndex = 0;
   var langSetting, Langsetting2;
   var languages = [];
@@ -131,7 +138,7 @@
 
   for(i=0;i<11;i++){
       languages[i] = [];
-      for(j=0;j<17;j++){
+      for(j=0;j<18;j++){
           languages[i][j]="a";
       }
   }
@@ -153,6 +160,7 @@
   languages[0][14]="Setup";
   languages[0][15]="Start";
   languages[0][16]="Save";
+  languages[0][17]="Feb";
   languages[1][0]="français";
   languages[1][1]="utilisateurs";
   languages[1][2]="paramètres";
@@ -170,6 +178,7 @@
   languages[1][14]="Installer";
   languages[1][15]="Début";
   languages[1][16]="enregistrer";
+  languages[1][17]="Fev";
   languages[2][0]= "español";
   languages[3][0]= "Deutsch";
   languages[4][0]= "flemish";
@@ -353,6 +362,19 @@ var degree = new fabric.Text('o', { left: 1770, top: 530, fontFamily: 'Arial', f
     plusText.lockMovementX = saveText.lockMovementY = false;
     plusText.selectable = false;
 
+    timeText1 = new fabric.Text("time1", { left: 1770, top:180, fontFamily: 'Arial',fill:"white", fontSize: 24, fontWeight: 'italic', originX: 'top',
+        originY: 'top',visible:true});
+
+    timeText1.hasControls = saveText.hasBorders = false;
+    timeText1.lockMovementX = saveText.lockMovementY = false;
+    timeText1.selectable = false;
+
+    timeText2 = new fabric.Text("time2", { left: 1760, top:200, fontFamily: 'Arial',fill:"white", fontSize: 24, fontWeight: 'italic', originX: 'top',
+        originY: 'top',visible:true});
+
+    timeText2.hasControls = saveText.hasBorders = false;
+    timeText2.lockMovementX = saveText.lockMovementY = false;
+    timeText2.selectable = false;
 
 
 
@@ -374,6 +396,31 @@ var waterControl = new fabric.Circle({
     var waterMonitor;
     var waterLevel = 0;
     var drain = false;
+    var today;
+
+    function getTime(){
+        today = new Date();
+        hour = today.getHours();
+        min  = today.getMinutes();
+        day  = today.getDay();
+        var pmAm= "AM";
+        if(hour>11){
+            if(hour>12){
+                hour = hour -12;
+            }
+            pmAm="PM";
+        }
+        if(hour<10)
+          hour = '0'+hour;
+        if(min<10)
+          min = '0'+min;
+        if(day<10)
+          day = '0'+day;
+
+        timeText1.text = languages[lIndex][17]+"-"+day.toString()+"-"+2015;
+        timeText2.text = hour.toString()+":"+min.toString()+pmAm;
+        console.log(timeText2.text);
+    }
 
     $(document).ready(function(){
         $("#button1").click(function(){
@@ -488,7 +535,11 @@ var waterControl = new fabric.Circle({
             temperature=95;
         }
         else{
+
             temperature = temperature + 5;
+            if(temperature>80&&isChild==true){
+                temperature=80;
+            }
         }
         console.log("Increasing temperature");
 
@@ -1225,7 +1276,7 @@ var waterControl = new fabric.Circle({
     menuText7.evented = false;
     menuText7.lockMovementX = menuText7.lockMovementY = true;
 
-    var menuText8 = new fabric.IText('User',{left:1650,top:180,fontFamily: 'Arial',fill:'green', fontSize: 34, fontWeight: 'italic', originX: 'top',
+    var menuText8 = new fabric.IText('User',{left:1550,top:180,fontFamily: 'Arial',fill:'white', fontSize: 34, fontWeight: 'italic', originX: 'top',
         originY: 'top',visible:false,editable:true});
 
     menuText8.selectable = false;
@@ -1238,7 +1289,7 @@ var waterControl = new fabric.Circle({
 
     var back = new fabric.Triangle({
         left: 1450,
-        top: 210,
+        top: 200,
         originX: 'center',
         originY: 'center',
         fill: 'white',
@@ -1860,7 +1911,7 @@ var waterControl = new fabric.Circle({
         button6.visible = true;
         plusText.visible = true;
         runText.visible = true;
-        menuText2.left=3655;
+        menuText2.left=3585;
         menuText2.top = 400;
         users2.visible = true;
         runText.text = languages[lIndex][14];
@@ -1948,8 +1999,6 @@ var waterControl = new fabric.Circle({
         isChild = profiles[userIndex].pref[prefIndex].isChild;
         menuText.top= 500;
         menuText.left= 3300;
-        menuText2.fill = 'green';
-        menuText2.left = 3800;
         menuText.fontSize = 34;
         menuText.text= languages[lIndex][9];
         menuText5.text = languages[lIndex][8];
@@ -1963,7 +2012,7 @@ var waterControl = new fabric.Circle({
     }
 
     setInterval(incWater,1000);
-
+    setInterval(getTime,1000);
     createShowerScreen();
     menu1();
 
@@ -2414,7 +2463,7 @@ var waterControl = new fabric.Circle({
 
     }
 
-
+getTime();
 
 
 //----------------------------------End of My Code-----------------------------------------------------------------
@@ -2461,6 +2510,8 @@ canvas.add(degree);
     canvas.add(usageText);
     canvas.add(userTypeText);
     canvas.add(back);
+    canvas.add(timeText1);
+    canvas.add(timeText2);
 
 /*canvas.add(menuText[0]);
 canvas.add(menuText[1]);*/

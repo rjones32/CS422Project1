@@ -24,14 +24,23 @@
   var temperature = 0;
   var diverter = false;
   var pressure = 0;
+  var isChild = false;
   var waterLevel = 0;
-  var isHot = false;
+  var isSet = false;
   var isCelsius = false;
-  var tmpDisp = [];
+  var prefIndex;
+  var tempText2;
+  var pressText2;
+  var userTypeText;
+  var usageText;
+  var saveText;
+  var runText;
   var profiles = [];
   var png = ".png";
-  var tempType = "F";
+  var tempType = ["F","C"];
+  var tempIndex = 0;
   var tempDisp;
+  var prefIndex;
   var divButt;
   var divButt2;
   var hotArrow;
@@ -39,6 +48,8 @@
   var pressDisp;
   var incPressButton;
   var decPressButton;
+  var button3;
+  var button4;
   var menu = [];
   var menuIndex = 0;
   var users;
@@ -47,16 +58,39 @@
   var menuScreen;
   var menuText;
   var menuText2;
-  var menuTemp;
-  var menuLang;
+  var menuText3;
+  var menuText4;
+  var menuText5;
+  var menuText6;
+  var menuText7;
+  var menuIndex = 0;
   var langSetting, Langsetting2;
   var languages = [];
   var lIndex = 0;
+  var nextLang = 0;
   var button,button2;
+  var nextArrow,prevArrow;
+  var userIndex;
 
-  for(i=0;i<2;i++){
+  /*for(i=0;i<5;i++){
+          profiles.push({name: "User", id: (i + 1), temp: 0, isChild: false, bath: false, press: 0, lang: 0});
+  */
+
+   for(i=0;i<2;i++) {
+       var prefences = [];
+       profiles.push({name: "User", id: (i+1), pref: prefences});
+       for (j = 0; j < 5; j++) {
+           profiles[i].pref.push({temp: 0, isChild: false, bath: false, press: 0, lang: 0});
+       }
+   }
+
+
+//  profiles[1].name="Ryan",profiles[1].temp=80,profiles[1].press=10;
+
+
+  for(i=0;i<11;i++){
       languages[i] = [];
-      for(j=0;j<5;j++){
+      for(j=0;j<17;j++){
           languages[i][j]="a";
       }
   }
@@ -65,12 +99,46 @@
   languages[0][1]="Users";
   languages[0][2]="Settings";
   languages[0][3]="Languages";
-  languages[0][4]="Temperature Type";
+  languages[0][4]="Scale Type";
+  languages[0][5]="User";
+  languages[0][6]="Temperature";
+  languages[0][7]="Pressure";
+  languages[0][8]="User Type";
+  languages[0][9]="Usage";
+  languages[0][10]="Adult";
+  languages[0][11]="Child";
+  languages[0][12]="Bath";
+  languages[0][13]="Shower";
+  languages[0][14]="Setup";
+  languages[0][15]="Start";
+  languages[0][16]="Save";
   languages[1][0]="français";
   languages[1][1]="utilisateurs";
   languages[1][2]="paramètres";
   languages[1][3]="Langues";
-  languages[1][4]="Température Type";
+  languages[1][4]="Type d' échelle";
+  languages[1][5]="utilisateur";
+  languages[1][6]="Température";
+  languages[1][7]="Pression";
+  languages[1][8]="utilisateur Type";
+  languages[1][9]="Usage";
+  languages[1][10]="Adulte";
+  languages[1][11]="Enfant";
+  languages[1][12]="Bain";
+  languages[1][13]="Douche";
+  languages[1][14]="Installer";
+  languages[1][15]="Début";
+  languages[1][16]="enregistrer";
+  languages[2][0]= "español";
+  languages[3][0]= "Deutsch";
+  languages[4][0]= "flemish";
+  languages[5][0]= "português";
+  languages[6][0]= "普通话";
+  languages[7][0]= "日本語";
+  languages[8][0]= "العَرَبِية";
+  languages[9][0]= "עברית";
+  languages[10][0]= "português";
+
 
 
 
@@ -168,7 +236,7 @@ var showerHead = new fabric.Circle({
 
 
 
-var tempText = new fabric.Text('0F', { left: 1755, top: 545, fontFamily: 'Arial', fontSize: 40, fontWeight: 'italic', originX: 'top',
+var tempText = new fabric.Text('0'+tempType[tempIndex], { left: 1755, top: 545, fontFamily: 'Arial', fontSize: 40, fontWeight: 'italic', originX: 'top',
   originY: 'top',});
 
 tempText.hasControls = tempText.hasBorders = false;
@@ -196,6 +264,48 @@ var degree = new fabric.Text('o', { left: 1770, top: 530, fontFamily: 'Arial', f
     psi.lockMovementX = psi.lockMovementY = false;
     psi.selectable = false;
 
+    tempText2 = new fabric.Text('0', { left: 1750, top: 260, fontFamily: 'Arial',fill:"white", fontSize: 34, fontWeight: 'italic', originX: 'top',
+        originY: 'top',visible:false});
+
+    tempText2.hasControls = tempText2.hasBorders = false;
+    tempText2.lockMovementX = tempText2.lockMovementY = false;
+    tempText2.selectable = false;
+
+    pressText2 = new fabric.Text('0', { left: 1750, top: 360, fontFamily: 'Arial',fill:"white", fontSize: 34, fontWeight: 'italic', originX: 'top',
+        originY: 'top',visible:false});
+
+    pressText2.hasControls = pressText2.hasBorders = false;
+    pressText2.lockMovementX = pressText2.lockMovementY = false;
+    pressText2.selectable = false;
+
+    usageText = new fabric.Text('Bath', { left: 1510, top: 260, fontFamily: 'Arial',fill:"white", fontSize: 34, fontWeight: 'italic', originX: 'top',
+        originY: 'top',visible:false});
+
+    usageText.hasControls = usageText.hasBorders = false;
+    usageText.lockMovementX = usageText.lockMovementY = false;
+    usageText.selectable = false;
+
+    userTypeText = new fabric.Text('Adult', { left: 1510, top:360, fontFamily: 'Arial',fill:"white", fontSize: 34, fontWeight: 'italic', originX: 'top',
+        originY: 'top',visible:false});
+
+    userTypeText.hasControls = userTypeText.hasBorders = false;
+    userTypeText.lockMovementX = userTypeText.lockMovementY = false;
+    userTypeText.selectable = false;
+
+    runText = new fabric.Text('Select', { left: 1650, top:410, fontFamily: 'Arial',fill:"white", fontSize: 34, fontWeight: 'italic', originX: 'top',
+        originY: 'top',visible:false});
+
+    runText.hasControls = runText.hasBorders = false;
+    runText.lockMovementX = runText.lockMovementY = false;
+    runText.selectable = false;
+
+    saveText = new fabric.Text('Save', { left: 1800, top:460, fontFamily: 'Arial',fill:"white", fontSize: 34, fontWeight: 'italic', originX: 'top',
+        originY: 'top',visible:false});
+
+    saveText.hasControls = saveText.hasBorders = false;
+    saveText.lockMovementX = saveText.lockMovementY = false;
+    saveText.selectable = false;
+
 
 
     //tempText.selectable = false;
@@ -213,26 +323,7 @@ var waterControl = new fabric.Circle({
 
 //-------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------My code---------------------------------------------------------
-  /*  var hotArrow = new fabric.Rect({
-        left: 1600,
-        top: 565,
-        originX: 'center',
-        originY: 'center',
-        fill:'white',
-        height: 150,
-        width: 100
-    })
-    var coldArrow = new fabric.Rect({
-        left: 1725,
-        top: 565,
-        originX: 'center',
-        originY: 'center',
-        fill:'white',
-        height: 150,
-        width: 100
-    })
-    hotArrow.lockMovementX = hotArrow.lockMovementY = true;
-    coldArrow.lockMovementX=coldArrow.lockMovementY = true;*/
+
 
     function tempInc(){
 
@@ -272,7 +363,18 @@ var waterControl = new fabric.Circle({
             tempText.bringToFront();
             degree.bringToFront();
         });
-        tempText.text=temperature.toString()+tempType;
+        if(tempIndex==1&&temperature!=0){
+            var celsius = (temperature-32)*5/9;
+            celsius = Math.floor(celsius);
+            tempText.text=celsius.toString()+tempType[tempIndex];
+        }
+        else {
+            tempText.text = temperature.toString() + tempType[tempIndex];
+        }
+        if(menuIndex==6){
+            tempText2.text = tempText.text;
+        }
+        waterFlow();
 
     }
 
@@ -314,11 +416,49 @@ var waterControl = new fabric.Circle({
             tempText.bringToFront();
             tempText.bringToFront();
             degree.bringToFront();
-            tempText.text=temperature.toString()+tempType;
 
+            if(tempIndex==1&&temperature!=0){
+
+                var celsius = (temperature-32)*5/9;
+                celsius = Math.floor(celsius);
+                tempText.text=celsius.toString()+tempType[tempIndex];
+            }
+            else {
+                tempText.text = temperature.toString() + tempType[tempIndex];
+            }
 
         });
+        if(menuIndex==6){
+            tempText2.text = tempText.text;
+        }
+        waterFlow();
 
+
+    }
+
+    function tempSet(){
+
+        var temp;
+        fabric.Image.fromURL(temperature+png, function(img) {
+            temp=img.scale(.5).set({
+                left: 3900,
+                top: 1250,
+                lockMovementX:true,
+                lockMovementY:true,
+                lockRotation:true,
+                lockScalingX:true,
+                lockScalingY:true,
+                originX: 'center',
+                originY: 'center',
+                visible: true
+            });
+            canvas.remove(tempDisp);
+            tempDisp = temp;
+            canvas.add(img).setActiveObject(img);
+            tempText.bringToFront();
+            degree.bringToFront();
+        });
+        tempText.text=temperature.toString()+tempType[tempIndex];
 
     }
 
@@ -335,9 +475,6 @@ var waterControl = new fabric.Circle({
                     hasRotatingPoint:false,
                     lockMovementX:true,
                     lockMovementY:true,
-                    /*lockRotation:true,
-                     lockScalingX:true,
-                     lockScalingY:true,*/
                     originX: 'center',
                     originY: 'center',
                     visible: true
@@ -347,14 +484,15 @@ var waterControl = new fabric.Circle({
 
                 img5.on('selected',function(){
                     divButton();
-
                 })
 
                 img5.bringToFront();
                 divButt2 = temp;
-                diverter = true;
-
             });
+            diverter = true;
+            if(menuIndex==6){
+                usageText.text = languages[lIndex][13]
+            }
 
         }
         else if(diverter==true){
@@ -368,10 +506,6 @@ var waterControl = new fabric.Circle({
                     hasRotatingPoint:false,
                     lockMovementX:true,
                     lockMovementY:true,
-                    /*lockRotation:true,
-                     lockScalingX:true,
-                     lockScalingY:true,*/
-
                     originX: 'center',
                     originY: 'center',
                     visible: true
@@ -380,14 +514,16 @@ var waterControl = new fabric.Circle({
                 canvas.remove(divButt2);
                 img5.on('selected',function(){
                     divButton();
-
                 })
                 img5.bringToFront();
                 divButt2 = temp;
-                diverter = false;
-
             });
+            diverter = false;
+            if(menuIndex==6){
+                usageText.text = languages[lIndex][12]
+            }
         }
+        waterFlow();
     }
 
     function incPress(){
@@ -422,8 +558,12 @@ var waterControl = new fabric.Circle({
             pressText.text=pressure.toString();
             pressText.bringToFront();
             psi.bringToFront();
+            waterFlow();
 
         });
+        if(menuIndex==6){
+            pressText2.text = pressText.text;
+        }
 
 
     }
@@ -461,7 +601,11 @@ var waterControl = new fabric.Circle({
             pressText.bringToFront();
             psi.bringToFront();
             pressText.text=pressure.toString();
+            waterFlow();
 
+            if(menuIndex==6){
+                pressText2.text = pressText.text;
+            }
 
 
         });
@@ -470,33 +614,48 @@ var waterControl = new fabric.Circle({
     }
 
 
+    function pressSet(){
+
+        fabric.Image.fromURL('p'+pressure+png, function(img6) {
+            temp=img6.scale(.5).set({
+                left: 3400,
+                top: 1250,
+                lockMovementX:true,
+                lockMovementY:true,
+                lockRotation:true,
+                lockScalingX:true,
+                lockScalingY:true,
+                originX: 'center',
+                originY: 'center',
+                visible: true
+            });
+            canvas.remove(pressDisp);
+            pressDisp = temp;
+            canvas.add(img6).setActiveObject(img6);
+            pressText.text=pressure.toString();
+            pressText.bringToFront();
+            psi.bringToFront();
+
+        });
 
 
-   /* hotArrow.on('selected', function() {
-        console.log('selected hotArrow');
-        tempInc();
-        canvas.deactivateAll(); // deselect everything
-    });
-
-    coldArrow.on('selected', function() {
-        console.log('selected hotArrow');
-        tempDec();
-        canvas.deactivateAll(); // deselect everything
-    });*/
-
-
-
-
-
-
-    /*
-     arrow2.on('selected', function() {
-     //console.log('selected a rectangle');
-     tempDec();
-     canvas.deactivateAll(); // deselect everything
-     });*/
-
-
+    }
+    function waterFlow(){
+        if(pressure>0&&temperature>0){
+            if(diverter==true){
+                showerHead.fill="blue";
+                bathSpout.fill="grey";
+            }
+            else if(diverter==false){
+                showerHead.fill="grey";
+                bathSpout.fill="blue";
+            }
+        }
+        else{
+            bathSpout.fill="grey";
+            showerHead.fill="grey";
+        }
+    }
 
 //-----------------------------------------------------------------------------------------------------------------
 //----------------------------------Menu text------------------------------------------------------------------------
@@ -504,13 +663,13 @@ var waterControl = new fabric.Circle({
 
 
     button = new fabric.Rect({
-        left: 1590,
+        left: 1650,
         top: 300,
         originX: 'center',
         originY: 'center',
         fill: 'grey',
         stroke: 'black',
-        width: 350,
+        width: 220,
         height: 50,
         angle: 0,
         visible:false
@@ -522,77 +681,264 @@ var waterControl = new fabric.Circle({
 
 
     button2 = new fabric.Rect({
-        left: 1590,
+        left: 1650,
         top: 370,
         originX: 'center',
         originY: 'center',
         fill: 'grey',
         stroke: 'black',
-        width: 350,
+        width: 220,
         height: 50,
         angle: 0,
         visible:false
     });
     button2.lockMovementX=button2.lockMovementY=true;
 
-
-
-    menuLang= new fabric.Text(languages[lIndex][3], {left:1525, top:340,fill:'white', fontFamily: 'Arial', fontSize: 40, fontWeight: 'italic', originX: 'top',
-        originY: 'top',visible:false, evented:true});
-
-    menuLang.hasControls = menuLang.hasBorders = false;
-    menuLang.lockMovementX = menuLang.lockMovementY = true;
-
-    menuLang.on('selected', function() {
-        langSettings();
-
+    button3 = new fabric.Rect({
+        left: 1650,
+        top: 430,
+        originX: 'center',
+        originY: 'center',
+        fill: 'grey',
+        stroke: 'black',
+        width: 220,
+        height: 40,
+        angle: 0,
+        visible:false
     });
+    button3.lockMovementX=button3.lockMovementY=true;
 
-
-    menuTemp = new fabric.Text(languages[lIndex][4], {left:1575,top:280,fontFamily: 'Arial',fill:'white', fontSize: 40, fontWeight: 'italic', originX: 'top',
-        originY: 'top',visible:false});
-
-    menuTemp.hasControls = menuTemp.hasBorders = false;
-    menuTemp.lockMovementX = menuTemp.lockMovementY = true;
-
-
-    langText= new fabric.Text(languages[lIndex][0], {left:1525, top:340,fill:'white', fontFamily: 'Arial', fontSize: 40, fontWeight: 'italic', originX: 'top',
-        originY: 'top',visible:false});
-
-    langText.hasControls = langText.hasBorders = false;
-    langText.lockMovementX = langText.lockMovementY = true;
-
-    langText.on('selected', function() {
-        langSettings();
-
+    button4 = new fabric.Rect({
+        left: 1525,
+        top: 380,
+        originX: 'center',
+        originY: 'center',
+        fill: 'grey',
+        stroke: 'black',
+        width: 150,
+        height: 35,
+        angle: 0,
+        visible:false
     });
+    button4.lockMovementX=button4.lockMovementY=true;
 
-
-    langText2= new fabric.Text(languages[lIndex][0], {left:1525, top:340,fill:'white', fontFamily: 'Arial', fontSize: 40, fontWeight: 'italic', originX: 'top',
-        originY: 'top',visible:false});
-
-    langText2.hasControls = langText2.hasBorders = false;
-    langText2.lockMovementX = langText2.lockMovementY = true;
-
-    langText2.on('selected', function() {
-        langSettings();
-
+    nextArrow = new fabric.Triangle({
+        left: 1790,
+        top: 310,
+        originX: 'center',
+        originY: 'center',
+        fill: 'white',
+        stroke: 'black',
+        lockMovementX: true,
+        lockMovementY: true,
+        hasControls: false,
+        hasBorders:false,
+        width: 150,
+        height: 50,
+        angle: 90,
+        visible:false
     });
+    /*nextArrow.lockMovementX=nextArrow.lockMovementY=true;
+    nextArrow.hasBorders = nextArrow.hasControls = false;*/
+    nextArrow.on('selected',function(){
+        if(menuIndex==4) {
+            if (userIndex == profiles.length) {
+                userIndex = 0;
+            }
+            else {
+                userIndex++;
+            }
+
+            if (profiles[userIndex].name != "User") {
+                menuText2.text = profiles[userIndex].name + profiles[userIndex].id;
+            }
+            else {
+                menuText2.text = languages[lIndex][5] + profiles[userIndex].id;
+            }
+        }
+        else if(menuIndex==2){
+            if(nextLang>10){
+                nextLang=0;
+                menuText3.text = languages[nextLang+1][0];
+                menuText4.text = languages[nextLang][0] ;
+            }
+            else if(nextLang==8){
+                nextLang = 10;
+                menuText3.text = " ";
+                menuText4.text = languages[nextLang][0];
+            }
+            else {
+                nextLang = nextLang + 2;
+                menuText3.text = languages[nextLang+1][0];
+                menuText4.text = languages[nextLang][0];
+            }
 
 
 
-    menuText = new fabric.Text(languages[lIndex][1], {left:1725, top:400,fill:'green', fontFamily: 'Arial', fontSize: 40, fontWeight: 'italic', originX: 'top',
+        }
+
+    })
+
+
+
+    prevArrow = new fabric.Triangle({
+        left: 1490,
+        top: 310,
+        originX: 'center',
+        originY: 'center',
+        fill: 'white',
+        stroke: 'black',
+        lockMovementX: true,
+        lockMovementY: true,
+        hasControls: false,
+        hasBorders:false,
+        width: 150,
+        height: 50,
+        angle: 270,
+        visible:false
+    });
+    //prevArrow.lockMovementX=prevArrow.lockMovementY=true;
+    //prevArrow.hasControls = prevArrow.hasBorders = false;
+
+    prevArrow.on('selected',function(){
+        if(menuIndex==4) {
+            if (userIndex == 0) {
+                userIndex = profiles.length;
+            }
+            else {
+                userIndex--;
+            }
+
+            if (profiles[userIndex].name != "User") {
+                menuText2.text = profiles[userIndex].name + profiles[userIndex].id;
+            }
+            else {
+                menuText2.text = languages[lIndex][5] + profiles[userIndex].id;
+            }
+        }
+        else if(menuIndex==2){
+            if(nextLang==0){
+                nextLang=10;
+                menuText3.text = " ";
+                menuText4.text = languages[nextLang][0] ;
+            }
+            else {
+                nextLang = nextLang - 2;
+                menuText3.text = languages[nextLang+1][0];
+                menuText4.text = languages[nextLang][0];
+            }
+        }
+    })
+
+
+
+
+    var nextArrow2 = new fabric.Triangle({
+        left: 1790,
+        top: 410,
+        originX: 'center',
+        originY: 'center',
+        fill: 'white',
+        stroke: 'black',
+        lockMovementX: true,
+        lockMovementY: true,
+        hasControls: false,
+        hasBorders:false,
+        width: 50,
+        height: 20,
+        angle: 90,
+        visible:false
+    });
+    /*nextArrow.lockMovementX=nextArrow.lockMovementY=true;
+     nextArrow.hasBorders = nextArrow.hasControls = false;*/
+    nextArrow2.on('selected',function(){
+
+
+    })
+
+
+
+    var prevArrow2 = new fabric.Triangle({
+        left: 1490,
+        top: 310,
+        originX: 'center',
+        originY: 'center',
+        fill: 'white',
+        stroke: 'black',
+        lockMovementX: true,
+        lockMovementY: true,
+        hasControls: false,
+        hasBorders:false,
+        width: 150,
+        height: 50,
+        angle: 270,
+        visible:false
+    });
+    //prevArrow.lockMovementX=prevArrow.lockMovementY=true;
+    //prevArrow.hasControls = prevArrow.hasBorders = false;
+
+    prevArrow2.on('selected',function(){
+
+    })
+
+
+
+    menuText3= new fabric.Text(languages[lIndex][3], {left:1655, top:340,fill:'white', fontFamily: 'Arial', fontSize: 40, fontWeight: 'italic', originX: 'top',
         originY: 'top',visible:false});
 
-    menuText.hasControls = menuText.hasBorders = true;
+    menuText3.selectable = false;
+    menuText3.evented = false;
+    menuText3.lockMovementX = menuText3.lockMovementY = true;
+
+
+
+
+    menuText4 = new fabric.Text(languages[lIndex][4], {left:1655,top:280,fontFamily: 'Arial',fill:'white', fontSize: 40, fontWeight: 'italic', originX: 'top',
+        originY: 'top',visible:false});
+
+    menuText4.selectable = false;
+    menuText4.evented = false;
+    menuText4.lockMovementX = menuText4.lockMovementY = true;
+
+
+
+
+    menuText = new fabric.Text(languages[lIndex][1], {left:1725, top:400,fill:'white', fontFamily: 'Arial', fontSize: 40, fontWeight: 'italic', originX: 'top',
+        originY: 'top',visible:false});
+
+    menuText.selectable = false;
+    menuText.evented = false;
     menuText.lockMovementX = menuText.lockMovementY = true;
 
 
-    menuText2 = new fabric.Text(languages[lIndex][2], {left:1525,top:400,fontFamily: 'Arial',fill:'green', fontSize: 40, fontWeight: 'italic', originX: 'top',
+    menuText2 = new fabric.Text(languages[lIndex][2], {left:1525,top:400,fontFamily: 'Arial',fill:'white', fontSize: 40, fontWeight: 'italic', originX: 'top',
         originY: 'top',visible:false});
 
-    menuText2.hasControls = menuText2.hasBorders = true;
+    menuText2.selectable = false;
+    menuText2.evented = false;
     menuText2.lockMovementX = menuText2.lockMovementY = true;
+
+
+    menuText5 = new fabric.Text(languages[lIndex][2], {left:1510,top:320,fontFamily: 'Arial',fill:'white', fontSize: 34, fontWeight: 'italic', originX: 'top',
+        originY: 'top',visible:false});
+
+    menuText5.selectable = false;
+    menuText5.evented = false;
+    menuText5.lockMovementX = menuText2.lockMovementY = true;
+
+    menuText6 = new fabric.Text(languages[lIndex][2], {left:1750,top:320,fontFamily: 'Arial',fill:'white', fontSize: 34, fontWeight: 'italic', originX: 'top',
+        originY: 'top',visible:false});
+
+    menuText6.selectable = false;
+    menuText6.evented = false;
+    menuText6.lockMovementX = menuText2.lockMovementY = true;
+
+    menuText7 = new fabric.Text(languages[lIndex][2], {left:1750,top:220,fontFamily: 'Arial',fill:'white', fontSize: 34, fontWeight: 'italic', originX: 'top',
+        originY: 'top',visible:false});
+
+    menuText7.selectable = false;
+    menuText7.evented = false;
+    menuText7.lockMovementX = menuText2.lockMovementY = true;
 
 
 //-----------------------------------------------------------------------------------------------------------------
@@ -600,19 +946,97 @@ var waterControl = new fabric.Circle({
 
     fabric.Image.fromURL('backarrow.png', function(img11) {
                 back = img11.scale(.75).set({
-                    left: 3375,
-                    top: 470,
+                    left: 3320,
+                    top: 430,
                     lockMovementX:true,
                     lockMovementY:true,
                     lockRotation:true,
                     lockScalingX:true,
                     lockScalingY:true,
+                    hasControls:false,
+                    hasBorders:false,
                     originX: 'center',
                     originY: 'center',
                     visible: false
                 });
+
+                img11.on('selected', function() {
+                    if(menuIndex==1) {
+                        back.setVisible(false);
+                        gear.setVisible(true);
+                        users.setVisible(true);
+                        menuText3.setVisible(false);
+                        menuText4.setVisible(false);
+                        button.setVisible(false);
+                        button2.setVisible(false);
+                        menuIndex=0;
+                        menu1();
+                    }
+
+                    else if(menuIndex==2){
+                        menuIndex=1;
+                        settingMenu();
+                    }
+                    else if(menuIndex==3){
+                        menuIndex=1;
+                        settingMenu();
+                    }
+
+                    else if(menuIndex==4){
+                        back.setVisible(false);
+                        gear.visible=true;
+                        users.visible = true;
+                        users2.visible = false;
+                        button3.visible = false;
+                        prevArrow.visible = false;
+                        nextArrow.visible = false;
+                        runText.visible = false;
+                        menuText2.left=3375;
+                        menuText2.top = 900;
+                        menuIndex=0;
+                        menu1();
+                    }
+                    else if(menuIndex==5){
+                        prevArrow.Visible = true;
+                        nextArrow.visible = true;
+                        users2.visible = true;
+                        menuText.visible = false;
+                        menuText5.visible = false;
+                        menuText6.visible = false;
+                        menuText7.visible = false;
+                        tempText2.visible = false;
+                        pressText2.visible = false;
+                        menuText.top = 900;
+                        menuText.left = 3875;
+                        menuText.fontSize = 40;
+                        userTypeText.visible = false;
+                        usageText.visible = false;
+                        menuIndex=4;
+                        userMenu();
+                    }
+                    else if(menuIndex==6){
+                        button4.visible=false;
+                        prevArrow.Visible = true;
+                        nextArrow.visible = true;
+                        users2.visible = true;
+                        menuText.visible = false;
+                        menuText5.visible = false;
+                        menuText6.visible = false;
+                        menuText7.visible = false;
+                        tempText2.visible = false;
+                        pressText2.visible = false;
+                        menuText.top = 900;
+                        menuText.left = 3875;
+                        menuText.fontSize = 40;
+                        userTypeText.visible = false;
+                        usageText.visible = false;
+                        menuIndex=4;
+                        userMenu();
+                    }
+                });
                 canvas.add(img11).setActiveObject(img11);
             }
+
     );
 
 
@@ -625,9 +1049,7 @@ var waterControl = new fabric.Circle({
             hasRotatingPoint:false,
             lockMovementX:false,
             lockMovementY:false,
-            /*lockRotation:true,
-            lockScalingX:true,
-            lockScalingY:true,*/
+            hasBorders:false,
             originX: 'center',
             originY: 'center',
             visible: true
@@ -636,11 +1058,6 @@ var waterControl = new fabric.Circle({
         tempText.bringToFront();
         degree.bringToFront();
     });
-
-
-
-
-
 
    fabric.Image.fromURL('hot-arrow.png', function(img2) {
         img2.scale(.5).set({
@@ -652,6 +1069,8 @@ var waterControl = new fabric.Circle({
             lockRotation:true,
             lockScalingX:true,
             lockScalingY:true,
+            hasControls:false,
+            hasBorders:false,
             originX: 'center',
             originY: 'center',
             visible: true
@@ -674,6 +1093,8 @@ var waterControl = new fabric.Circle({
             lockMovementX:true,
             lockMovementY:true,
             lockRotation:true,
+            hasControls:false,
+            hasBorders:false,
             lockScalingX:true,
             lockScalingY:true,
             originX: 'center',
@@ -694,9 +1115,8 @@ var waterControl = new fabric.Circle({
             hasRotatingPoint:false,
             lockMovementX:true,
             lockMovementY:true,
-            /*lockRotation:true,
-             lockScalingX:true,
-             lockScalingY:true,*/
+            hasControls:false,
+            hasBorders:false,
             originX: 'center',
             originY: 'center',
             visible: true
@@ -712,14 +1132,14 @@ var waterControl = new fabric.Circle({
             hasRotatingPoint:false,
             lockMovementX:true,
             lockMovementY:true,
-            /*lockRotation:true,
-             lockScalingX:true,
-             lockScalingY:true,*/
+            hasControls:false,
+            hasBorders:false,
             originX: 'center',
             originY: 'center',
             visible: true
         });
         canvas.add(img5);
+        //diverter=false;
         img5.bringToFront();
         img5.on('selected',function(){
             divButton();
@@ -736,9 +1156,8 @@ var waterControl = new fabric.Circle({
             hasRotatingPoint:false,
             lockMovementX:true,
             lockMovementY:true,
-            /*lockRotation:true,
-             lockScalingX:true,
-             lockScalingY:true,*/
+            hasControls:false,
+            hasBorders:false,
             originX: 'center',
             originY: 'center',
             visible: true
@@ -748,11 +1167,6 @@ var waterControl = new fabric.Circle({
         psi.bringToFront();
 
     });
-
-
-
-
-
 
     fabric.Image.fromURL('incPress.png', function(img7) {
         incPressButton=img7.scale(.5).set({
@@ -764,6 +1178,8 @@ var waterControl = new fabric.Circle({
             lockRotation:true,
             lockScalingX:true,
             lockScalingY:true,
+            hasControls:false,
+            hasBorders:false,
             originX: 'center',
             originY: 'center',
             visible: true
@@ -774,8 +1190,6 @@ var waterControl = new fabric.Circle({
 
         });
         canvas.add(img7).setActiveObject(img7);
-
-
     });
 
     fabric.Image.fromURL('decpress.png', function(img8) {
@@ -788,6 +1202,8 @@ var waterControl = new fabric.Circle({
             lockRotation:true,
             lockScalingX:true,
             lockScalingY:true,
+            hasControls:false,
+            hasBorders:false,
             originX: 'center',
             originY: 'center',
             visible: true
@@ -809,18 +1225,22 @@ var waterControl = new fabric.Circle({
             lockRotation: true,
             lockScalingX: true,
             lockScalingY: true,
+            hasControls:false,
+            hasBorders:false,
             originX: 'center',
             originY: 'center',
             visible: true
         });
 
-        canvas.add(gear).setActiveObject(gear);
+        canvas.add(gear);
+        //.setActiveObject(gear);
 
         gear.on('selected', function() {
             gear.setVisible(false);
             users.setVisible(false);
             menuText.setVisible(false);
             menuText2.setVisible(false);
+            menuIndex=1;
             settingMenu();
 
         });
@@ -836,22 +1256,55 @@ var waterControl = new fabric.Circle({
                     lockRotation:true,
                     lockScalingX:true,
                     lockScalingY:true,
+                    hasControls:false,
+                    hasBorders:false,
                     originX: 'center',
                     originY: 'center',
                     visible: true
                 });
 
-                /* img7.on('selected', function() {
-                 incPress();
+                canvas.add(users);
 
-                 });*/
-                canvas.add(users).setActiveObject(users);
+                users.on("selected", function() {
+                    if (menuIndex == 0) {
+                        menuIndex = 4;
+                        gear.visible = false;
+                        users.visible = false;
+                        menuText.visible = false;
+                        userMenu();
+                    }
+                    /*else if(menuIndex==4){
+                     userProfile();
+                     }*/
 
-
+                });
 
             }
     );
 
+    fabric.Image.fromURL('user.png', function(img11) {
+                users2= img11.scale(1).set({
+                    _uid:1,
+                    left: 3655,
+                    top: 700, lockMovementX:true,
+                    lockMovementY:true,
+                    lockRotation:true,
+                    lockScalingX:true,
+                    lockScalingY:true,
+                    hasControls:false,
+                    hasBorders:false,
+                    originX: 'center',
+                    originY: 'center',
+                    visible: false
+                });
+        canvas.add(users2);
+        users2.on("selected", function() {
+                    menuIndex = 5;
+                    nextArrow.visible=false;
+                    prevArrow.visible=false;
+                    users2.visible = false;
+                    userProfile();});
+    });
 
     function createShowerScreen(){
         menuScreen = new fabric.Rect({
@@ -863,6 +1316,7 @@ var waterControl = new fabric.Circle({
             stroke: 'black',
             width: 450,
             height: 300,
+            evented:false,
             angle: 0
         });
 
@@ -873,17 +1327,23 @@ var waterControl = new fabric.Circle({
 
     function menu1() {
         menuText.setVisible(true);
+        menuText.text = languages[lIndex][2];
         menuText2.setVisible(true);
+        menuText2.text = languages[lIndex][1];
         }
 
     function settingMenu(){
 
-
         back.setVisible(true);
-        menuLang.setVisible(true);
-        menuLang.bringToFront();
-        menuTemp.setVisible(true);
-        menuTemp.bringToFront();
+
+        menuText3.setVisible(true);
+        menuText3.setText(languages[lIndex][3]);
+        menuText3.bringToFront();
+
+        menuText4.setVisible(true);
+        menuText4.setText(languages[lIndex][4]);
+        menuText4.bringToFront();
+
         button.setVisible(true);
         button2.setVisible(true);
 
@@ -894,27 +1354,219 @@ var waterControl = new fabric.Circle({
         menuScreen.lockMovementX = true;
         menuScreen.lockMovementY = true;
 
-        back.on('selected', function() {
-            back.setVisible(false);
-            gear.setVisible(true);
-            users.setVisible(true);
-            menuTemp.setVisible(false);
-            menuLang.setVisible(false);
-            button.setVisible(false);
-            button2.setVisible(false);
-            menu1();
-        });
+    }
 
+    function userType(){
+        if(isChild==false){
+            userTypeText.text = languages[lIndex][10]
+        }
+        else{
+            userTypeText.text = languages[lIndex][11]
+        }
     }
     function langSettings(){
-
-        langText.setVisible(true);
-        langText2.setVisible(true);
+        nextArrow.visible=true;
+        prevArrow.visible=true;
+        nextLang = 0;
+        menuText3.setText(languages[1][0]);
+        menuText4.setText(languages[0][0]);
     }
 
+    function tempSettings(){
+
+        menuText3.setText("Celsius");
+        menuText4.setText("Fahrenheit");
+    }
+    button.on('selected',function(){
+        if(menuIndex==1){
+            menuIndex=3;
+            tempSettings();
+        }
+        else if(menuIndex==2&&nextLang==0){
+            lIndex=0;
+            menuIndex=1;
+            nextArrow.visible=false;
+            prevArrow.visible=false;
+            settingMenu()
+        }
+        else if(menuIndex==3){
+            tempIndex = 0;
+            menuIndex=1;
+            tempText.text = temperature + tempType[tempIndex];
+            settingMenu();
+        }
+
+    });
+    button2.on('selected', function() {
+        if(menuIndex==1) {
+            menuIndex = 2;
+            langSettings();
+        }
+        else if(menuIndex==2&&nextLang==0){
+            lIndex=1;
+            menuIndex=1;
+            nextArrow.visible=false;
+            prevArrow.visible=false;
+            settingMenu()
+        }
+        else if(menuIndex==3){
+            tempIndex = 1;
+            menuIndex=1;
+            if(tempIndex==1&&temperature!=0){
+
+                var celsius = (temperature-32)*5/9;
+                celsius = Math.floor(celsius);
+                tempText.text=celsius.toString()+tempType[tempIndex];
+            }
+            else{
+                tempText.text=temperature.toString()+tempType[tempIndex];
+            }
+            settingMenu();
+        }
+    });
+
+    button3.on('selected',function(){
+        if(menuIndex==5){
+            if(isSet==false){
+                temperature = profiles[userIndex].pref[prefIndex].temp;
+                pressure = profiles[userIndex].pref[prefIndex].press;
+                if(profiles[userIndex].pref[prefIndex].bath==false){
+                    diverter = false;
+                }
+                else{
+                    diverter = true;
+                }
+                divButton();
+                tempSet();
+                pressSet();
+                waterFlow();
+                button3.fill='blue';
+                isSet=true;
+            }
+            else{
+                temperature = 0;
+                pressure = 0;
+                diverter = true;
+                divButton();
+                tempSet();
+                pressSet();
+                waterFlow();
+                button3.fill='grey';
+                isSet=false;
+            }
+
+        }
+        else if(menuIndex==4){
+            menuIndex=6
+            users2.visible=false;
+            nextArrow.visible=false;
+            prevArrow.visible=false;
+            setupProfileMenu();
+        }
+    })
+
+    button4.on('selected',function(){
+        if(isChild==true){
+            button4.fill = 'grey';
+            isChild=false;
+        }
+        else{
+            button4.fill = 'green';
+            isChild=true;
+        }
+        userType()
+    })
+
+
+    function userMenu(){
+
+        back.visible = true;
+        nextArrow.visible = true;
+        prevArrow.visible = true;
+        button3.visible = true;
+        runText.visible = true;
+        menuText2.left=3655;
+        menuText2.top = 400;
+        users2.visible = true;
+        userIndex = 0;
+        runText.text = languages[lIndex][14];
+        if(profiles[userIndex].name!="User") {
+            menuText2.text = profiles[userIndex].name;
+        }
+        else {
+            menuText2.text = languages[lIndex][5]+profiles[userIndex].id;
+        }
+
+        //users.left = 3655;
+
+    }
+
+
+    function userProfile(){
+        menuText.visible = true;
+        menuText5.visible = true;
+        menuText6.visible = true;
+        menuText7.visible = true;
+        pressText2.visible = true;
+        tempText2.visible = true;
+        usageText.visible = true;
+        userTypeText.visible = true;
+        nextArrow2.visible = true;
+        prevArrow2.visible = true;
+        menuText.top= 500;
+        menuText.left= 3300;
+        menuText.fontSize = 34;
+        menuText.text= languages[lIndex][9];
+        menuText5.text = languages[lIndex][8];
+        menuText6.text = languages[lIndex][7];
+        menuText7.text = languages[lIndex][6];
+        runText.text = languages[lIndex][15];
+        prefIndex =0;
+
+        if(profiles[userIndex].pref[prefIndex].isChild==false){
+            userTypeText.text = languages[lIndex][10];
+        }
+        else{
+            userTypeText.text = languages[lIndex][11];
+        }
+
+        if(profiles[userIndex].pref[prefIndex].bath==false){
+            usageText.text = languages[lIndex][12];
+        }
+        else{
+            usageText.text = languages[lIndex][13];
+        }
+
+        tempText2.text = profiles[userIndex].pref[prefIndex].temp + tempType[tempIndex];
+        pressText2.text = profiles[userIndex].pref[prefIndex].press +"psi";
+
+    }
+    function setupProfileMenu(){
+        menuIndex=6;
+        menuText.visible = true;
+        menuText5.visible = true;
+        menuText6.visible = true;
+        menuText7.visible = true;
+        pressText2.visible = true;
+        tempText2.visible = true;
+        usageText.visible = true;
+        userTypeText.visible = true;
+        button4.visible = true;
+        isChild = profiles[userIndex].isChild;
+        menuText.top= 500;
+        menuText.left= 3300;
+        menuText.fontSize = 34;
+        menuText.text= languages[lIndex][9];
+        menuText5.text = languages[lIndex][8];
+        menuText6.text = languages[lIndex][7];
+        menuText7.text = languages[lIndex][6];
+        runText.text = languages[lIndex][16];
+
+    }
 
     createShowerScreen();
     menu1();
+
 
 
 //----------------------------------End of My Code-----------------------------------------------------------------
@@ -951,10 +1603,25 @@ canvas.add(degree);
     canvas.add(menuScreen);
     canvas.add(menuText);
     canvas.add(menuText2);
-    canvas.add(menuTemp);
-    canvas.add(menuLang);
+    canvas.add(menuText3);
+    canvas.add(menuText4);
+    canvas.add(menuText5);
+    canvas.add(menuText6);
+    canvas.add(menuText7);
     canvas.add(button);
     canvas.add(button2);
+    canvas.add(button3);
+    canvas.add(button4);
+    canvas.add(runText);
+    canvas.add(saveText);
+    canvas.add(nextArrow);
+    canvas.add(nextArrow2);
+    canvas.add(prevArrow);
+    canvas.add(prevArrow2);
+    canvas.add(tempText2);
+    canvas.add(pressText2);
+    canvas.add(usageText);
+    canvas.add(userTypeText);
 
 /*canvas.add(menuText[0]);
 canvas.add(menuText[1]);*/
